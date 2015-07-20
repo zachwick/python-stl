@@ -71,6 +71,11 @@ class Facet(object):
     A facet (triangle) from a :py:class:`stl.Solid`.
     """
 
+    #: The uint16 of 'attribute bytes'. By the STL spec, these are unused and
+    #: are generally supposed to both be \0. However, some modeling software
+    #: uses them for various purposes.
+    attributes = None
+
     #: The 'normal' vector of the facet, as a :py:class:`stl.Vector3d`.
     normal = None
 
@@ -78,7 +83,7 @@ class Facet(object):
     #: facet's three vertices, in order.
     vertices = None
 
-    def __init__(self, normal, vertices):
+    def __init__(self, normal, vertices, attributes=None):
         self.normal = Vector3d(*normal)
         self.vertices = tuple(
             Vector3d(*x) for x in vertices

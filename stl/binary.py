@@ -61,14 +61,20 @@ def parse(file):
         vertices = tuple(
             r.read_vector3d() for j in xrange(0, 3)
         )
+
+        attr_byte_count = r.read_uint16()
+        if attr_byte_count > 0:
+            # Some modeling software uses the attribute bytes for various
+            # purposes, so don't skip attribute bytes
+            attr_bytes = r.read_bytes(attr_byte_count)
+        else:
+            attr_bytes = None
+            
         ret.add_facet(
             normal=normal,
             vertices=vertices,
+            attributes=attr_bytes,
         )
-        attr_byte_count = r.read_uint16()
-        if attr_byte_count > 0:
-            # skip attribute bytes
-            r.read_bytes(attr_byte_count)
 
     return ret
 
