@@ -108,7 +108,8 @@ class TestParser(unittest.TestCase):
     def test_no_facets(self):
         self.assertEqual(
             self._parse_str("solid Baz\nendsolid Baz\n"),
-            Solid(name="Baz"),
+            Solid(name="Baz",
+                  surface_area=0),
         )
 
     def test_inconsistent_name(self):

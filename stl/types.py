@@ -1,4 +1,4 @@
-
+import math
 
 class Solid(object):
     """
@@ -12,17 +12,38 @@ class Solid(object):
     #: facets (triangles) that make up the exterior surface of this object.
     facets = []
 
-    def __init__(self, name=None, facets=None):
+    #: A scalar value (because STL files are unitless) that is the total
+    #: surface area of the mesh. This is nothing more than a summation of
+    #: the area of each facet
+    surface_area = 0.0
+    
+    def __init__(self, name=None, facets=None, surface_area=None):
         self.name = name
         self.facets = facets if facets is not None else []
+        self.surface_area = self.calc_surface_area() if surface_area is not None else 0
 
     def add_facet(self, *args, **kwargs):
         """
-        Append a new facet to the object. Takes the same arguments as the
-        :py:class:`stl.Facet` type.
+        Append a new facet to the object and update :py:class:`stl.Solid.surface_area'. 
+        Takes the same arguments as the :py:class:`stl.Facet` type.
         """
         self.facets.append(Facet(*args, **kwargs))
+        self._update_surface_area(self.facets[-1])
+        
+    def calc_surface_area(self):
+        """
+        Calculate the surface area of the :py:class:`stl.Solid` object
+        """
+        for facet in self.facets:
+            self.surface_area += facet.area
 
+    def _update_surface_area(self, facet):
+        """
+        Calculate the area of the given :py:class:`stl.Facet` and add it to the surface_area
+        of the :py:class:`stl.Solid` object
+        """
+        self.surface_area += facet.area
+        
     def write_binary(self, file):
         """
         Write this object to a file in STL *binary* format.
@@ -88,6 +109,7 @@ class Facet(object):
         self.vertices = tuple(
             Vector3d(*x) for x in vertices
         )
+        
         if len(self.vertices) != 3:
             raise ValueError('Must pass exactly three vertices')
 
@@ -102,14 +124,57 @@ class Facet(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
-
+    
     def __repr__(self):
-        return '<stl.types.Facet normal=%r, vertices=%r>' % (
+        return '<stl.types.Facet normal=%r, vertices=%r, area=%r>' % (
             self.normal,
             self.vertices,
-        )
+            self.area,
+    )
 
+    @property
+    def a(self):
+        """
+        The length the side of the facet between vertices[0] and vertices[1]
+        """
+        return abs(math.sqrt(pow((self.vertices[0].x - self.vertices[1].x),2) +
+                             pow((self.vertices[0].y - self.vertices[1].y),2) +
+                             pow((self.vertices[0].z - self.vertices[1].z),2)))
+    @property
+    def b(self):
+        """
+        The length of the side of the facet between vertices[0] and vertices[2]
+        """
+        return abs(math.sqrt(pow((self.vertices[0].x - self.vertices[2].x),2) +
+                             pow((self.vertices[0].y - self.vertices[2].y),2) +
+                             pow((self.vertices[0].z - self.vertices[2].z),2)))
 
+    @property
+    def c(self):
+        """
+        The length of the side of the facet between vertices[1] and vertices[2]
+        """
+        return abs(math.sqrt(pow((self.vertices[1].x - self.vertices[2].x),2) +
+                             pow((self.vertices[1].y - self.vertices[2].y),2) +
+                             pow((self.vertices[1].z - self.vertices[2].z),2)))
+
+    @property
+    def perimeter(self):
+        """
+        The length of the perimeter of the facet
+        """
+        return self.a + self.b + self.c
+
+    @property
+    def area(self):
+        """
+        The surface area of the facet, as computed by Heron's Formula
+        """
+        p = self.perimeter / 2.0
+        calced = abs(math.sqrt(p * (p - self.a) * (p - self.b) * (p - self.c)))
+        return calced
+        
+        
 class Vector3d(tuple):
     """
     Three-dimensional vector.
