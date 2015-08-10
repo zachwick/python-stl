@@ -1,0 +1,9 @@
+python-stl is a python library for reading and writing STL files.
+
+STL (STereoLithography) is a file format native to the stereolithography CAD
+software created by 3D Systems.
+
+python-stl is copyright 2015 Martin Atkins and is licensed under the MIT License
+which can be found at `python-stl/LICENSE`.
+
+See the AUTHORS file for other contributors.
