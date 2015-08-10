@@ -87,7 +87,7 @@ class FormatError(ValueError):
 def parse(file):
     r = Reader(file)
 
-    name = r.read_header()[6:]
+    name = r.read_header()
 
     ret = Solid(name=name)
 
