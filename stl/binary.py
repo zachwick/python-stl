@@ -69,7 +69,7 @@ def parse(file):
             attr_bytes = r.read_bytes(attr_byte_count)
         else:
             attr_bytes = None
-            
+
         ret.add_facet(
             normal=normal,
             vertices=vertices,
