@@ -29,5 +29,11 @@ setup(
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 2.7",
     ],
+
+    url='https://github.com/apparentlysmart/python-stl',
+    license="MIT",
+    keywords="stl 3d modelling geometry"
 )
